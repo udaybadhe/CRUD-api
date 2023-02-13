@@ -9,13 +9,6 @@ Before you can use this API, you need to have the following software installed o
 - [Node.js](https://nodejs.org/)
 - [MongoDB](https://www.mongodb.com/)
 
-## Installation
-
-To install the dependencies for this API, run the following command in the root directory of the project:
-
-npm install
-
-
 ## Usage
 
 To start the API, run the following command in the root directory of the project:
