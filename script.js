@@ -1,3 +1,5 @@
+const axios = require("axios");
+const express = require('express');
 const mongoose = require('mongoose');
 
 mongoose.connect('mongodb://localhost/mydatabase');
@@ -8,53 +10,49 @@ const dataSchema = new mongoose.Schema({
 });
 
 const Data = mongoose.model('Data', dataSchema);
+const app = express();
 
-const command = process.argv[2];
-const name = process.argv[3];
-const age = process.argv[4];
-
-if (command === 'create') {
-  const newData = new Data({
-    name: name,
-    age: age
+app.listen(3301, () => {
+  app.post('/', async (req, res)=>{
+    const data = new Data({
+        name: name,
+        age: age
+      });
+    
+    const result = await data.save();
+    return res.json({result});
   });
 
-  newData.save((error) => {
-    if (error) {
-      console.log(error);
-    } else {
-      console.log(newData);
-    }
-    mongoose.connection.close();
+  app.get('/', async (req, res)=>{
+    const result = await Data.find((error, data) => {
+        if (error) {
+            return error;
+          } else {
+            return data;
+          }
+      });
+    return res.json({result});
   });
-} else if (command === 'read') {
-  Data.find((error, data) => {
-    if (error) {
-      console.log(error);
-    } else {
-      console.log(data);
-    }
-    mongoose.connection.close();
+
+  app.put('/', async (req, res)=>{
+    const result = await Data.findOneAndUpdate({name: name}, {age: age}, {new: true}, (error, data) => {
+        if (error) {
+          return error;
+        } else {
+          return data;
+        }
+      });
+    return res.json({result});
   });
-} else if (command === 'update') {
-  Data.findOneAndUpdate({name: name}, {age: age}, {new: true}, (error, data) => {
-    if (error) {
-      console.log(error);
-    } else {
-      console.log(data);
-    }
-    mongoose.connection.close();
-  });
-} else if (command === 'delete') {
-  Data.findOneAndRemove({name: name}, (error, data) => {
-    if (error) {
-      console.log(error);
-    } else {
-      console.log(data);
-    }
-    mongoose.connection.close();
-  });
-} else {
-  console.log(`Invalid command: ${command}`);
-  mongoose.connection.close();
-}
+
+  app.delete('/', async (req, res)=>{
+    const result = await Data.findOneAndRemove({name: name}, (error, data) => {
+        if (error) {
+            return error;
+          } else {
+            return data;
+          }
+      });
+    return res.json({result});
+  });
+});
